@@ -7,6 +7,12 @@ import EventDetail from './pages/EventDetail';
 import MyTasks from './pages/MyTasks';
 import NotFound from './pages/NotFound';
 import PublicEvent from './pages/PublicEvent';
+import WelcomePage from './pages/WelcomePage';
+import LoginPage from './pages/LoginPage';
+import SignupPage from './pages/SignupPage';
+import NewEventPage from './pages/NewEventPage';
+import ProtectedRoute from './components/ProtectedRoute';
+import PublicOnlyRoute from './components/PublicOnlyRoute';
 
 /** Moves focus to <main> and scrolls to top on navigation (screen-reader & keyboard friendly). */
 function RouteAnnouncer() {
@@ -34,11 +40,15 @@ export default function App() {
       <RouteAnnouncer />
       <main id="main" tabIndex={-1}>
         <Routes>
-          <Route path="/" element={<Dashboard />} />
-          <Route path="/events/:id" element={<EventDetail />} />
+          <Route path="/welcome" element={<PublicOnlyRoute><WelcomePage /></PublicOnlyRoute>} />
+          <Route path="/login" element={<PublicOnlyRoute><LoginPage /></PublicOnlyRoute>} />
+          <Route path="/signup" element={<PublicOnlyRoute><SignupPage /></PublicOnlyRoute>} />
+          <Route path="/" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
+          <Route path="/events/new" element={<ProtectedRoute><NewEventPage /></ProtectedRoute>} />
+          <Route path="/events/:id" element={<ProtectedRoute><EventDetail /></ProtectedRoute>} />
           <Route path="/event/:id" element={<PublicEvent />} />
-          <Route path="/calendar" element={<CalendarPage />} />
-          <Route path="/tasks" element={<MyTasks />} />
+          <Route path="/calendar" element={<ProtectedRoute><CalendarPage /></ProtectedRoute>} />
+          <Route path="/tasks" element={<ProtectedRoute><MyTasks /></ProtectedRoute>} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </main>

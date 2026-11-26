@@ -1,7 +1,6 @@
 import { useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import EmptyState from '../components/EmptyState';
-import RequireUser from '../components/RequireUser';
 import SegmentedControl from '../components/SegmentedControl';
 import { SkeletonGrid } from '../components/Skeleton';
 import TaskList from '../components/TaskList';
@@ -14,14 +13,6 @@ import { getRole, isTaskOverdue } from '../utils/eventHelpers';
 /** Cross-event task list for the signed-in user, with overdue highlighting. */
 export default function MyTasks() {
   useDocumentTitle('My tasks');
-  return (
-    <RequireUser>
-      <MyTasksInner />
-    </RequireUser>
-  );
-}
-
-function MyTasksInner() {
   const toast = useToast();
   const { status, events, tasks, users, updateTask } = useEvents();
   const { currentUser } = useAuth();

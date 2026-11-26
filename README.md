@@ -10,8 +10,14 @@ npm run build && npm run preview   # production build
 ```
 Requires Node 18+. Deep links like `/event/evt_launch` work in dev/preview (SPA fallback); on static hosting configure a rewrite to `index.html`.
 
+## Authentication
+- First-time visitors see `/welcome`; returning logged-out visitors go to `/login`.
+- Demo account: `dev@example.com` / `Demo1234`
+- Users and sessions are stored only in browser storage. Demo passwords use a random per-user salt and SHA-256 via the Web Crypto API.
+- This client-side authentication is **not production-grade security** and must be replaced with server-side authentication and a secure password-hashing implementation before use with real accounts.
+
 ## Try it
-- Use the **user switcher** (header) to act as Ava (host of 2 events), Ben (co-host), Chloe (guest) – or pick *Sign out* to see the public guest view.
+- Use **Try the demo** to sign in instantly as Dev Patel.
 - Public guest page: `/event/evt_react` (capacity 6, already full → RSVP lands on the **waitlist**; remove/decline someone as host and the waitlist auto-promotes).
 - Management view: `/events/:id` (hosts/co-hosts) with Overview, Attendees, Tasks (list + drag-and-drop Kanban), Comments.
 - Calendar (month/week/agenda, **Export .ics**), My Tasks (overdue highlighted), dark-mode toggle.
@@ -22,8 +28,8 @@ Requires Node 18+. Deep links like `/event/evt_launch` work in dev/preview (SPA 
 src/
   components/  EventCard, EventForm, RSVPForm, CalendarMonth, CalendarWeek, Agenda, TaskBoard,
                TaskItem, TaskList, TaskForm, CommentThread, AttendeeList, Modal, Tabs, Countdown…
-  pages/       Dashboard, EventDetail, CalendarPage, MyTasks, PublicEvent, NotFound
-  context/     EventContext (useReducer), AuthContext (mock user switcher), ThemeContext, ToastContext
+  pages/       Dashboard, EventDetail, CalendarPage, MyTasks, PublicEvent, Welcome, Login, Signup, NotFound
+  context/     EventContext (useReducer), AuthContext (client-side demo auth), ThemeContext, ToastContext
   hooks/       useLocalStorage, useCountdown, useDocumentTitle
   utils/       dateHelpers, icsExport, idGenerator, eventHelpers (roles, capacity/waitlist), validators
   services/    api.js  ← the only data-layer module (localStorage today)

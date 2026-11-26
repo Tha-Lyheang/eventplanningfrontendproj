@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import EmptyState from '../components/EmptyState';
 import EventCard from '../components/EventCard';
 import EventForm from '../components/EventForm';
@@ -64,6 +64,10 @@ export default function Dashboard() {
       });
   }, [events, rsvps, currentUser, query, filter]);
 
+  const hasPersonalEvents = rows.some(({ role, rsvp }) =>
+    role !== ROLES.GUEST || !!rsvp,
+  );
+
   function handleCreate(values) {
     const created = createEvent(values, currentUser.id);
     setCreating(false);
@@ -81,9 +85,7 @@ export default function Dashboard() {
           </p>
         </div>
         {currentUser && (
-          <button type="button" className="btn btn--primary" onClick={() => setCreating(true)}>
-            + New event
-          </button>
+          <Link to="/events/new" className="btn btn--primary">+ New event</Link>
         )}
       </div>
 
@@ -129,7 +131,17 @@ export default function Dashboard() {
         </EmptyState>
       )}
 
-      {status === 'ready' && rows.length > 0 && (
+      {status === 'ready' && rows.length > 0 && !hasPersonalEvents && !query && (
+        <EmptyState
+          icon="🎈"
+          title="Create your first event"
+          action={<Link to="/events/new" className="btn btn--primary">Create an event</Link>}
+        >
+          You do not have any events yet. Start a plan and invite people to gather.
+        </EmptyState>
+      )}
+
+      {status === 'ready' && rows.length > 0 && (hasPersonalEvents || query) && (
         <>
           <p className="sr-only" role="status">{rows.length} events shown</p>
           <div className="card-grid">

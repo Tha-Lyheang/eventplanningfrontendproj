@@ -37,6 +37,15 @@ export function eventReducer(state, action) {
     case 'LOAD_ERROR':
       return { ...state, status: 'error', error: action.error };
 
+    case 'USERS_SYNC':
+      return {
+        ...state,
+        users: action.payload.users.map((user) => {
+          const existing = state.users.find((item) => item.id === user.id);
+          return existing ? { ...existing, ...user } : user;
+        }),
+      };
+
     /* ------------------------------- events ------------------------------- */
     case 'EVENT_ADD':
       return {
@@ -180,6 +189,10 @@ export function EventProvider({ children }) {
     const now = () => new Date().toISOString();
 
     return {
+      syncUsers(users) {
+        dispatch({ type: 'USERS_SYNC', payload: { users } });
+      },
+
       createEvent(values, hostId) {
         const event = { ...values, id: generateId('evt'), hostId, coHostIds: [], createdAt: now() };
         dispatch({ type: 'EVENT_ADD', payload: { event } });
