@@ -47,7 +47,9 @@ export default function SignupPage() {
     } catch (error) {
       setErrors(error.message === 'EMAIL_EXISTS'
         ? { email: 'This email is already registered.' }
-        : { form: 'Could not create your account. Please try again.' });
+        : { form: error.code === 'SECURE_CONTEXT_REQUIRED'
+          ? 'Secure context required. Open Gather over HTTPS or localhost to create an account.'
+          : error.message || 'Could not create your account. Please try again.' });
     } finally {
       setSubmitting(false);
     }

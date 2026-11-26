@@ -12,7 +12,7 @@ export function buildSeed(now = new Date()) {
     { id: 'u_ava', name: 'Ava Martinez', email: 'ava@example.com', avatarColor: '#6366f1' },
     { id: 'u_ben', name: 'Ben Okafor', email: 'ben@example.com', avatarColor: '#f43f5e' },
     { id: 'u_chloe', name: 'Chloe Tanaka', email: 'chloe@example.com', avatarColor: '#10b981' },
-    { id: 'u_dev', name: 'Dev Patel', email: 'dev@example.com', avatarColor: '#f59e0b' },
+    { id: 'u_dev', name: 'Dev Patel', email: 'dev@gather.app', avatarColor: '#f59e0b' },
     { id: 'u_emma', name: 'Emma Larsen', email: 'emma@example.com', avatarColor: '#0ea5e9' },
   ];
   const U = Object.fromEntries(users.map((u) => [u.id, u]));

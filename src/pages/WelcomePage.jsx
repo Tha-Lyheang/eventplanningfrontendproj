@@ -1,17 +1,11 @@
-import { Link, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import AccountSwitcher from '../components/AccountSwitcher';
 import useDocumentTitle from '../hooks/useDocumentTitle';
 
 export default function WelcomePage() {
   useDocumentTitle('Welcome to Gather');
-  const navigate = useNavigate();
-  const { loginDemo, isAuthenticated, currentUser } = useAuth();
-
-  async function handleDemo() {
-    await loginDemo(true);
-    navigate('/dashboard', { replace: true });
-  }
+  const { loginAsDemo, isAuthenticated, currentUser, loading } = useAuth();
 
   const features = [
     ['🎟️', 'RSVPs and waitlists', 'Track going, maybe and declined responses with automatic waitlist promotion.'],
@@ -36,7 +30,7 @@ export default function WelcomePage() {
             <>
               <Link className="btn btn--primary" to="/signup">Sign up</Link>
               <Link className="btn" to="/login">Log in</Link>
-              <button className="btn btn--ghost" type="button" onClick={handleDemo}>Try the demo</button>
+              <button className="btn btn--ghost" type="button" onClick={loginAsDemo} disabled={loading}>Try the demo</button>
             </>
           )}
         </div>

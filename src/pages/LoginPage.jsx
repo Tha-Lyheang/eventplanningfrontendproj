@@ -9,7 +9,7 @@ export default function LoginPage() {
   const location = useLocation();
   const [searchParams] = useSearchParams();
   const adding = searchParams.get('add') === '1';
-  const { login, loginDemo, accounts, switchAccount } = useAuth();
+  const { login, loginAsDemo, accounts, switchAccount, loading } = useAuth();
   const [values, setValues] = useState({ email: '', password: '', remember: true });
   const [error, setError] = useState('');
   const [submitting, setSubmitting] = useState(false);
@@ -25,18 +25,10 @@ export default function LoginPage() {
       await login(values);
       const requested = location.state?.from;
       navigate(requested ? `${requested.pathname}${requested.search || ''}${requested.hash || ''}` : '/dashboard', { replace: true });
-    } catch {
-      setError('Incorrect email or password');
-    } finally {
-      setSubmitting(false);
-    }
-  }
-
-  async function handleDemo() {
-    setSubmitting(true);
-    try {
-      await loginDemo(true);
-      navigate('/dashboard', { replace: true });
+    } catch (error) {
+      setError(error.code === 'SECURE_CONTEXT_REQUIRED'
+        ? 'Secure context required. Open Gather over HTTPS or localhost to log in.'
+        : 'Incorrect email or password');
     } finally {
       setSubmitting(false);
     }
@@ -84,7 +76,7 @@ export default function LoginPage() {
             {submitting ? <><span className="spinner spinner--sm" aria-hidden="true" /> Logging in…</> : 'Log in'}
           </button>
         </form>
-        <button className="btn auth-demo" type="button" onClick={handleDemo} disabled={submitting}>Try the demo</button>
+        <button className="btn auth-demo" type="button" onClick={loginAsDemo} disabled={submitting || loading}>Try the demo</button>
         {adding
           ? <p className="auth-link"><Link to={location.state?.from?.pathname || '/dashboard'}>Cancel</Link></p>
           : <p className="auth-link">New here? <Link to="/signup" state={{ from: location.state?.from }}>Create an account</Link></p>}
