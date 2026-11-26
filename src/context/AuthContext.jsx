@@ -100,6 +100,7 @@ async function repairDemoUsers(storedUsers, demoUsers, storedVersion) {
 
     const repaired = {
       ...existing,
+      // Seeded demo profiles override stale stored flags on every app load.
       ...demo,
       avatarInitials: initials(demo.name).toUpperCase(),
       salt,
@@ -230,6 +231,7 @@ export function AuthProvider({ children }) {
       id,
       name: name.trim(),
       email: cleanEmail,
+      isDemo: false,
       avatarInitials: initials(name).toUpperCase(),
       avatarColor: avatarColor(),
       salt,
@@ -350,13 +352,15 @@ export function AuthProvider({ children }) {
     () => accountIds.map((id) => users.find((user) => user.id === id)).filter(Boolean),
     [accountIds, users],
   );
+  // Demo mode follows the active profile, so account switches update the banner immediately.
+  const isDemoMode = currentUser?.isDemo === true;
   const value = useMemo(() => ({
     currentUser, users, accounts, signup, login, loginAsDemo, switchAccount,
     addAccount, removeAccount, logout, logoutAll,
-    isAuthenticated: !!currentUser, loading,
+    isAuthenticated: !!currentUser, isDemoMode, loading,
   }), [
     currentUser, users, accounts, signup, login, loginAsDemo, switchAccount,
-    addAccount, removeAccount, logout, logoutAll, loading,
+    addAccount, removeAccount, logout, logoutAll, isDemoMode, loading,
   ]);
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

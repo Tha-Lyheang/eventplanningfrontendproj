@@ -40,6 +40,16 @@ main { outline: none; min-height: 70vh; }
 
 /* ---------- header ---------- */
 .site-header { position: sticky; top: 0; z-index: 30; background: var(--surface); border-bottom: 1px solid var(--border); }
+.demo-banner { position: relative; z-index: 31; background: var(--warn-soft); color: var(--text); border-bottom: 1px solid var(--warn); }
+.demo-banner-inner { position: relative; max-width: 1180px; margin: 0 auto; padding: 8px 48px 8px 16px; display: flex; align-items: center; gap: 12px; }
+.demo-banner-message { flex: 1; min-width: 0; margin: 0; font-size: .9rem; }
+.demo-banner-actions { display: flex; align-items: center; gap: 8px; }
+.demo-banner-signup { background: var(--warn); border-color: var(--warn); color: var(--surface); }
+.demo-banner-signup:hover { background: var(--warn); filter: brightness(1.08); }
+.demo-banner-exit { background: transparent; border-color: var(--warn); }
+.demo-banner-close { position: absolute; right: 8px; top: 50%; transform: translateY(-50%); }
+.demo-badge { display: inline-flex; align-items: center; border-radius: 999px; padding: 1px 7px; background: var(--warn-soft); color: var(--warn); border: 1px solid var(--warn); font-size: .68rem; font-weight: 800; line-height: 1.35; white-space: nowrap; }
+.demo-event-note { margin: 0; padding: 8px 10px; background: var(--warn-soft); border-left: 3px solid var(--warn); border-radius: 6px; color: var(--text); font-size: .88rem; }
 .site-header-inner { max-width: 1180px; margin: 0 auto; padding: 10px 16px; display: flex; flex-wrap: wrap; align-items: center; gap: 8px 16px; }
 .brand { font-weight: 800; font-size: 1.25rem; text-decoration: none; color: var(--text); }
 .main-nav { display: flex; gap: 4px; order: 3; width: 100%; overflow-x: auto; }
@@ -82,6 +92,14 @@ main { outline: none; min-height: 70vh; }
 }
 @media (min-width: 720px) { .main-nav { order: 0; width: auto; } }
 .site-footer { text-align: center; color: var(--muted); font-size: .85rem; padding: 32px 16px; }
+.site-footer p { margin: 4px 0 0; }
+@media (max-width: 520px) {
+  .demo-banner-inner { align-items: stretch; flex-direction: column; gap: 8px; padding: 10px 48px 10px 12px; }
+  .demo-banner-message { font-size: .86rem; }
+  .demo-banner-actions { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .demo-banner-actions .btn { justify-content: center; min-width: 0; padding-left: 8px; padding-right: 8px; }
+  .demo-banner-close { top: 7px; right: 6px; transform: none; }
+}
 
 /* ---------- layout ---------- */
 .page { max-width: 1180px; margin: 0 auto; padding: 20px 16px 40px; }

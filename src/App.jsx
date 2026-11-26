@@ -17,6 +17,8 @@ import SignupPage from './pages/SignupPage';
 import NewEventPage from './pages/NewEventPage';
 import ProtectedRoute from './components/ProtectedRoute';
 import PublicOnlyRoute from './components/PublicOnlyRoute';
+import DemoBanner from './components/DemoBanner';
+import { useAuth } from './context/AuthContext';
 
 /** Moves focus to <main> and scrolls to top on navigation (screen-reader & keyboard friendly). */
 function RouteAnnouncer() {
@@ -39,9 +41,13 @@ function RouteAnnouncer() {
  *   /tasks         My Tasks across all events
  */
 export default function App() {
+  const { isDemoMode } = useAuth();
+
   return (
     <>
       <a href="#main" className="skip-link">Skip to content</a>
+      {/* Keep the demo notice in normal flow above the sticky navbar. */}
+      <DemoBanner />
       <Navbar />
       <RouteAnnouncer />
       <main id="main" tabIndex={-1}>
@@ -71,7 +77,8 @@ export default function App() {
         </Routes>
       </main>
       <footer className="site-footer">
-        Gather · demo data is stored in your browser&apos;s localStorage.
+        Gather
+        {isDemoMode && <p>Demo data is stored in your browser&apos;s localStorage.</p>}
       </footer>
     </>
   );

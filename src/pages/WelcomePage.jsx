@@ -5,12 +5,13 @@
 import { Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import AccountSwitcher from '../components/AccountSwitcher';
+import DemoBadge from '../components/DemoBadge';
 import useDocumentTitle from '../hooks/useDocumentTitle';
 
 /** AuthContext determines whether visitors see sign-up/demo actions or continue/switch actions. */
 export default function WelcomePage() {
   useDocumentTitle('Welcome to Gather');
-  const { loginAsDemo, isAuthenticated, currentUser, loading } = useAuth();
+  const { loginAsDemo, isAuthenticated, currentUser, isDemoMode, loading } = useAuth();
 
   const features = [
     ['🎟️', 'RSVPs and waitlists', 'Track going, maybe and declined responses with automatic waitlist promotion.'],
@@ -28,7 +29,9 @@ export default function WelcomePage() {
         <div className="welcome-actions">
           {isAuthenticated ? (
             <>
-              <Link className="btn btn--primary" to="/dashboard">Continue as {currentUser.name}</Link>
+              <Link className="btn btn--primary" to="/dashboard">
+                Continue as {currentUser.name}{isDemoMode && <DemoBadge />}
+              </Link>
               <AccountSwitcher triggerLabel="Switch account" compact />
             </>
           ) : (

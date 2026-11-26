@@ -11,11 +11,11 @@ import ThemeToggle from './ThemeToggle';
 import AccountSwitcher from './AccountSwitcher';
 
 /**
- * Uses currentUser for the overdue-task badge and AuthContext for signed-in navigation.
+ * Uses currentUser for the overdue-task badge and AuthContext for signed-in navigation/demo status.
  * The Gather brand always links to the public Welcome page.
  */
 export default function Navbar() {
-  const { currentUser, isAuthenticated } = useAuth();
+  const { currentUser, isAuthenticated, isDemoMode } = useAuth();
   const { tasks } = useEvents();
   const location = useLocation();
   const publicPage = ['/', '/welcome', '/login', '/signup'].includes(location.pathname);
@@ -60,7 +60,7 @@ export default function Navbar() {
           {publicPage && isAuthenticated && (
             <Link className="btn btn--primary btn--sm" to="/dashboard">Go to dashboard</Link>
           )}
-          {isAuthenticated && !publicPage && <AccountSwitcher />}
+          {isAuthenticated && !publicPage && <AccountSwitcher showDemoBadge={isDemoMode} />}
         </div>
       </div>
     </header>

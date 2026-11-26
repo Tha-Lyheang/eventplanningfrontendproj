@@ -8,13 +8,15 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useToast } from '../context/ToastContext';
 import Avatar from './Avatar';
+import DemoBadge from './DemoBadge';
 
 /**
  * Shows the active account and dropdown controls.
- * Props: triggerLabel (accessible button label) and compact (short welcome-page trigger).
+ * Props: triggerLabel (accessible button label), compact (short welcome-page trigger),
+ * and optional showDemoBadge (active-account demo state supplied by Navbar).
  * Reads auth/toast context; open state and refs manage keyboard focus and outside-click closing.
  */
-export default function AccountSwitcher({ triggerLabel = 'Account switcher', compact = false }) {
+export default function AccountSwitcher({ triggerLabel = 'Account switcher', compact = false, showDemoBadge }) {
   const navigate = useNavigate();
   const location = useLocation();
   const toast = useToast();
@@ -92,6 +94,7 @@ export default function AccountSwitcher({ triggerLabel = 'Account switcher', com
   }
 
   if (!currentUser) return null;
+  const activeIsDemo = showDemoBadge ?? (currentUser.isDemo === true);
   const otherAccounts = accounts.filter((account) => account.id !== currentUser.id);
 
   return (
@@ -112,6 +115,7 @@ export default function AccountSwitcher({ triggerLabel = 'Account switcher', com
             <small>{currentUser.email}</small>
           </span>
         )}
+        {activeIsDemo && <DemoBadge />}
         {!compact && <span aria-hidden="true">▾</span>}
       </button>
 
@@ -120,6 +124,7 @@ export default function AccountSwitcher({ triggerLabel = 'Account switcher', com
           <div className="account-menu-current">
             <Avatar name={currentUser.name} color={currentUser.avatarColor} size={40} />
             <div><strong>{currentUser.name}</strong><small>{currentUser.email}</small></div>
+            {currentUser.isDemo && <DemoBadge />}
           </div>
           {otherAccounts.map((account, index) => (
             <div className="account-menu-row" key={account.id}>
@@ -132,6 +137,7 @@ export default function AccountSwitcher({ triggerLabel = 'Account switcher', com
               >
                 <Avatar name={account.name} color={account.avatarColor} size={36} />
                 <span><strong>{account.name}</strong><small>{account.email}</small></span>
+                {account.isDemo && <DemoBadge />}
               </button>
               <button
                 type="button"
@@ -171,4 +177,5 @@ export default function AccountSwitcher({ triggerLabel = 'Account switcher', com
 AccountSwitcher.propTypes = {
   triggerLabel: PropTypes.string,
   compact: PropTypes.bool,
+  showDemoBadge: PropTypes.bool,
 };
