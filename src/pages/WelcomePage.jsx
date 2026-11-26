@@ -1,8 +1,13 @@
+/**
+ * WelcomePage: public landing page with feature highlights and account entry actions.
+ * Rendered at /; logged-in visitors can continue to the dashboard or switch accounts.
+ */
 import { Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import AccountSwitcher from '../components/AccountSwitcher';
 import useDocumentTitle from '../hooks/useDocumentTitle';
 
+/** AuthContext determines whether visitors see sign-up/demo actions or continue/switch actions. */
 export default function WelcomePage() {
   useDocumentTitle('Welcome to Gather');
   const { loginAsDemo, isAuthenticated, currentUser, loading } = useAuth();

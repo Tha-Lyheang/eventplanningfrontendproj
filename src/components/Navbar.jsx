@@ -1,3 +1,7 @@
+/**
+ * Navbar: shared brand, protected-page navigation, theme control, and account actions.
+ * Mounted by App; the current route and AuthContext determine which controls appear.
+ */
 import { useMemo } from 'react';
 import { Link, NavLink, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
@@ -6,7 +10,10 @@ import { isTaskOverdue } from '../utils/eventHelpers';
 import ThemeToggle from './ThemeToggle';
 import AccountSwitcher from './AccountSwitcher';
 
-/** Site header: brand, primary navigation, theme toggle and the mock user switcher. */
+/**
+ * Uses currentUser for the overdue-task badge and AuthContext for signed-in navigation.
+ * The Gather brand always links to the public Welcome page.
+ */
 export default function Navbar() {
   const { currentUser, isAuthenticated } = useAuth();
   const { tasks } = useEvents();

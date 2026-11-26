@@ -1,3 +1,7 @@
+/**
+ * MyTasks: shows tasks assigned to the active account across its visible events.
+ * Routed at /tasks; EventContext supplies tasks while AuthContext supplies currentUser.
+ */
 import { useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import EmptyState from '../components/EmptyState';
@@ -10,13 +14,15 @@ import { useToast } from '../context/ToastContext';
 import useDocumentTitle from '../hooks/useDocumentTitle';
 import { getRole, isTaskOverdue } from '../utils/eventHelpers';
 
-/** Cross-event task list for the signed-in user, with overdue highlighting. */
+/** Local scope filters task rows; account changes reset that scope to show all assigned tasks. */
 export default function MyTasks() {
   useDocumentTitle('My tasks');
   const toast = useToast();
   const { status, events, tasks, users, updateTask } = useEvents();
   const { currentUser } = useAuth();
+  // Scope selects all, open, or overdue tasks for the current account.
   const [scope, setScope] = useState('mine');
+  // When currentUser.id changes, reset the task filter for the newly active account.
   useEffect(() => setScope('mine'), [currentUser?.id]);
 
   const usersById = useMemo(() => Object.fromEntries(users.map((u) => [u.id, u])), [users]);

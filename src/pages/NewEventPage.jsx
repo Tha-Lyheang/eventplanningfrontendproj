@@ -1,3 +1,7 @@
+/**
+ * NewEventPage: standalone create-event form for the active account.
+ * Routed at /events/new; AuthContext supplies its owner and EventContext persists the event.
+ */
 import { useNavigate } from 'react-router-dom';
 import EventForm from '../components/EventForm';
 import { useAuth } from '../context/AuthContext';
@@ -5,6 +9,7 @@ import { useEvents } from '../context/EventContext';
 import { useToast } from '../context/ToastContext';
 import useDocumentTitle from '../hooks/useDocumentTitle';
 
+/** Creates an event for currentUser, then opens its workspace. */
 export default function NewEventPage() {
   useDocumentTitle('Create event');
   const navigate = useNavigate();

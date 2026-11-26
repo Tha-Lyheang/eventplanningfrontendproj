@@ -1,3 +1,7 @@
+/**
+ * AccountSwitcher: accessible account menu for the signed-in user.
+ * Renders account switching, adding, removal, and logout actions; used by Navbar and WelcomePage.
+ */
 import { useEffect, useRef, useState } from 'react';
 import PropTypes from 'prop-types';
 import { useLocation, useNavigate } from 'react-router-dom';
@@ -5,6 +9,11 @@ import { useAuth } from '../context/AuthContext';
 import { useToast } from '../context/ToastContext';
 import Avatar from './Avatar';
 
+/**
+ * Shows the active account and dropdown controls.
+ * Props: triggerLabel (accessible button label) and compact (short welcome-page trigger).
+ * Reads auth/toast context; open state and refs manage keyboard focus and outside-click closing.
+ */
 export default function AccountSwitcher({ triggerLabel = 'Account switcher', compact = false }) {
   const navigate = useNavigate();
   const location = useLocation();
@@ -15,6 +24,7 @@ export default function AccountSwitcher({ triggerLabel = 'Account switcher', com
   const triggerRef = useRef(null);
   const itemRefs = useRef([]);
 
+  // When open changes, focus the menu and attach dismissal listeners; cleanup removes listeners on close.
   useEffect(() => {
     if (!open) return undefined;
     function handlePointer(event) {

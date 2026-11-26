@@ -1,3 +1,7 @@
+/**
+ * Dashboard: searches and filters events visible to the active account and starts event creation.
+ * Routed at /dashboard; uses AuthContext, EventContext, and toast notifications.
+ */
 import { useEffect, useMemo, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import EmptyState from '../components/EmptyState';
@@ -22,7 +26,10 @@ const FILTERS = [
   { value: 'all', label: 'All' },
 ];
 
-/** Home: search + filter your events and create new ones. */
+/**
+ * Page-level query/filter/modal state is reset when the active account changes.
+ * Event ownership, RSVP, and role data are derived from currentUser and EventContext.
+ */
 export default function Dashboard() {
   useDocumentTitle('Dashboard');
   const navigate = useNavigate();
@@ -30,10 +37,12 @@ export default function Dashboard() {
   const { status, error, events, rsvps, createEvent } = useEvents();
   const { currentUser } = useAuth();
 
+  // Query, selected event filter, and create-dialog visibility are local dashboard UI state.
   const [query, setQuery] = useState('');
   const [filter, setFilter] = useState('upcoming');
   const [creating, setCreating] = useState(false);
 
+  // When currentUser.id changes, clear account-specific search and view state.
   useEffect(() => {
     setQuery('');
     setFilter('upcoming');

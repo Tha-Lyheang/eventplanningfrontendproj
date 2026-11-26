@@ -1,8 +1,16 @@
+/**
+ * LoginPage: authenticates an account, supports remember-me, and preserves protected destinations.
+ * Routed at /login; AuthContext handles login/demo activation and account switching.
+ */
 import { useState } from 'react';
 import { Link, useLocation, useNavigate, useSearchParams } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import useDocumentTitle from '../hooks/useDocumentTitle';
 
+/**
+ * Form state holds credentials, generic feedback, and submit progress.
+ * Login redirects to the attempted route or dashboard; the demo action is handled by AuthContext.
+ */
 export default function LoginPage() {
   useDocumentTitle('Log in');
   const navigate = useNavigate();
@@ -10,6 +18,7 @@ export default function LoginPage() {
   const [searchParams] = useSearchParams();
   const adding = searchParams.get('add') === '1';
   const { login, loginAsDemo, accounts, switchAccount, loading } = useAuth();
+  // Credentials and remember preference stay in component state; only the session choice is persisted.
   const [values, setValues] = useState({ email: '', password: '', remember: true });
   const [error, setError] = useState('');
   const [submitting, setSubmitting] = useState(false);

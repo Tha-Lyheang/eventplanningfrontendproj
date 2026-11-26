@@ -1,3 +1,7 @@
+/**
+ * EventForm: validated create/edit form for event details, schedule, venue, and visibility.
+ * Used by Dashboard, EventDetail, and NewEventPage; submit/cancel work through parent callbacks.
+ */
 import { useMemo, useRef, useState } from 'react';
 import PropTypes from 'prop-types';
 import { eventShape } from '../propTypes';
@@ -72,8 +76,12 @@ export function validateEvent(v) {
   return errors;
 }
 
-/** Create / edit form for an event, with inline validation. */
+/**
+ * Props: optional event prefills edits; submitLabel, onSubmit, and onCancel configure the form actions.
+ * Local values, touched, and submitted state drive validation and focus the first invalid field.
+ */
 export default function EventForm({ event, submitLabel, onSubmit, onCancel }) {
+  // Keep the editable draft, field-visit state, and submission state local to this form.
   const [values, setValues] = useState(() => (event ? valuesFromEvent(event) : defaultValues()));
   const [touched, setTouched] = useState({});
   const [submitted, setSubmitted] = useState(false);

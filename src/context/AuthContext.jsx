@@ -1,3 +1,7 @@
+/**
+ * AuthContext: shared users, active account, session restoration, and multi-account actions.
+ * AuthProvider wraps App; pages and account controls consume it through useAuth().
+ */
 import {
   createContext, useCallback, useContext, useEffect, useMemo, useRef, useState,
 } from 'react';
@@ -7,10 +11,15 @@ import { useEvents } from './EventContext';
 import { useToast } from './ToastContext';
 
 const AuthContext = createContext(null);
+// gather_users stores user profiles plus per-user password salt/hash records.
 const USERS_KEY = 'gather_users';
+// gather_session stores the active user ID and remember preference in the chosen storage.
 const SESSION_KEY = 'gather_session';
+// gather_accounts stores only the signed-in user IDs, never credentials.
 const ACCOUNTS_KEY = 'gather_accounts';
+// gather_active_account stores { userId } in localStorage or sessionStorage.
 const ACTIVE_KEY = 'gather_active_account';
+// gather_data_version stores the numeric auth-data schema version for migrations.
 const VERSION_KEY = 'gather_data_version';
 const DATA_VERSION = 2;
 const DEMO_PASSWORD = 'admin';
@@ -21,6 +30,7 @@ function readJson(storage, key) {
     const raw = storage.getItem(key);
     return raw ? JSON.parse(raw) : null;
   } catch (error) {
+    // A malformed or unavailable key should not crash account restoration; log it for diagnosis.
     console.error(`Unable to read ${key} from browser storage.`, error);
     return null;
   }
@@ -52,6 +62,7 @@ async function hashPassword(password, salt) {
     error.code = 'SECURE_CONTEXT_REQUIRED';
     throw error;
   }
+  // Salt each account's password hash so equal passwords do not produce equal stored digests.
   const encoder = new TextEncoder();
   const input = await window.crypto.subtle.digest('SHA-256', encoder.encode(`${salt}:${password}`));
   return Array.from(new Uint8Array(input), (byte) => byte.toString(16).padStart(2, '0')).join('');
@@ -101,15 +112,22 @@ async function repairDemoUsers(storedUsers, demoUsers, storedVersion) {
   return { users, hashesReady };
 }
 
+/**
+ * Provides account/session state to the app.
+ * Props: children is the router subtree; provider effects restore users and synchronize profiles.
+ */
 export function AuthProvider({ children }) {
   const navigate = useNavigate();
   const toast = useToast();
   const { status: eventsStatus, users: eventUsers, syncUsers } = useEvents();
   const demoUsersRef = useRef(eventUsers);
   demoUsersRef.current = eventUsers;
+  // `users` includes profile and password metadata; `accountIds` contains only IDs persisted in gather_accounts.
   const [users, setUsers] = useState([]);
   const [accountIds, setAccountIds] = useState([]);
+  // The selected profile drives permissions and all account-specific page data.
   const [currentUser, setCurrentUser] = useState(null);
+  // Keeps route guards from redirecting before event and auth data have both restored.
   const [loading, setLoading] = useState(true);
 
   const persistSignedAccounts = useCallback((ids) => {
@@ -133,6 +151,7 @@ export function AuthProvider({ children }) {
     persistActive(user, remember);
   }, [persistActive]);
 
+  /** Reseeds demo profiles and repairs their salted hashes; writes users and schema version to localStorage. */
   const ensureDemoUsers = useCallback(async () => {
     const storedUsers = readJson(window.localStorage, USERS_KEY);
     const existing = Array.isArray(storedUsers) ? storedUsers : [];
@@ -145,6 +164,7 @@ export function AuthProvider({ children }) {
     return repaired.users;
   }, []);
 
+  // After eventsStatus/ensureDemoUsers change, migrate seeds and restore the active ID from session storage.
   useEffect(() => {
     if (eventsStatus !== 'ready') return undefined;
     let cancelled = false;
@@ -188,6 +208,7 @@ export function AuthProvider({ children }) {
     return () => { cancelled = true; };
   }, [eventsStatus, ensureDemoUsers, toast]);
 
+  // When loading/users/syncUsers changes, mirror safe profile fields into EventContext.
   useEffect(() => {
     if (!loading && users.length > 0) {
       syncUsers(users.map(({ id, name, email, avatarColor: color, avatarInitials }) => ({
@@ -196,6 +217,10 @@ export function AuthProvider({ children }) {
     }
   }, [loading, users, syncUsers]);
 
+  /**
+   * Creates and activates a user from { name, email, password }.
+   * Writes the hashed user and signed-in ID to localStorage, then stores a remembered session.
+   */
   const signup = useCallback(async ({ name, email, password }) => {
     const cleanEmail = email.trim().toLowerCase();
     if (users.some((user) => user.email.toLowerCase() === cleanEmail)) throw new Error('EMAIL_EXISTS');
@@ -219,6 +244,10 @@ export function AuthProvider({ children }) {
     return user;
   }, [users, accountIds, persistSignedAccounts, activateUser]);
 
+  /**
+   * Verifies { email, password, remember }, activates that account, and adds its ID to gather_accounts.
+   * Persists the active session in localStorage when remembered, otherwise in sessionStorage.
+   */
   const login = useCallback(async ({ email, password, remember = true }) => {
     const cleanEmail = email.trim().toLowerCase();
     const user = users.find((item) => item.email.toLowerCase() === cleanEmail);
@@ -231,6 +260,10 @@ export function AuthProvider({ children }) {
     return user;
   }, [users, accountIds, persistSignedAccounts, activateUser]);
 
+  /**
+   * Activates Dev Patel without password comparison, repairs demo seeds, and navigates to /dashboard.
+   * Writes account/session records and shows success or error toast feedback.
+   */
   const loginAsDemo = useCallback(async () => {
     try {
       const currentDemoUsers = await ensureDemoUsers();
@@ -257,6 +290,7 @@ export function AuthProvider({ children }) {
     }
   }, [ensureDemoUsers, persistActive, toast, navigate]);
 
+  /** Switches to a signed-in user ID, preserving the current remember-me storage mode. */
   const switchAccount = useCallback((userId) => {
     const user = users.find((item) => item.id === userId);
     if (!user || !accountIds.includes(userId)) return false;
@@ -265,6 +299,10 @@ export function AuthProvider({ children }) {
     return true;
   }, [users, accountIds, activateUser]);
 
+  /**
+   * Removes a user ID from the local signed-in account list; if active, activates a remaining account.
+   * Updates localStorage/session state but does not delete the user's profile.
+   */
   const removeAccount = useCallback((userId) => {
     const nextIds = accountIds.filter((id) => id !== userId);
     persistSignedAccounts(nextIds);
@@ -281,6 +319,7 @@ export function AuthProvider({ children }) {
     }
   }, [accountIds, currentUser, users, persistSignedAccounts, activateUser]);
 
+  /** Signs out only the active user and activates another stored account when available. */
   const logout = useCallback(() => {
     const nextIds = accountIds.filter((id) => id !== currentUser?.id);
     persistSignedAccounts(nextIds);
@@ -295,6 +334,7 @@ export function AuthProvider({ children }) {
     }
   }, [accountIds, currentUser, users, persistSignedAccounts, activateUser]);
 
+  /** Clears every signed-in ID and session from localStorage/sessionStorage. */
   const logoutAll = useCallback(() => {
     persistSignedAccounts([]);
     setCurrentUser(null);
@@ -304,6 +344,7 @@ export function AuthProvider({ children }) {
     window.sessionStorage.removeItem(SESSION_KEY);
   }, [persistSignedAccounts]);
 
+  /** Opens the login flow in add-account mode without signing out the active user. */
   const addAccount = useCallback(() => navigate('/login?add=1'), [navigate]);
   const accounts = useMemo(
     () => accountIds.map((id) => users.find((user) => user.id === id)).filter(Boolean),
@@ -323,6 +364,7 @@ export function AuthProvider({ children }) {
 
 AuthProvider.propTypes = { children: PropTypes.node.isRequired };
 
+/** Returns the auth provider's current user, account list, status, and account actions. */
 export function useAuth() {
   const context = useContext(AuthContext);
   if (!context) throw new Error('useAuth must be used inside <AuthProvider>');

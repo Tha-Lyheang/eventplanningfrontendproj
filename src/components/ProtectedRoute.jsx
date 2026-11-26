@@ -1,7 +1,15 @@
+/**
+ * ProtectedRoute: gates a route until session restoration completes.
+ * Used by App around Dashboard, calendar, task, and event-management pages.
+ */
 import PropTypes from 'prop-types';
 import { Navigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 
+/**
+ * Props: children is the protected page. AuthContext supplies loading/authentication state;
+ * unauthenticated visitors are sent to login with their requested location in router state.
+ */
 export default function ProtectedRoute({ children }) {
   const { isAuthenticated, loading } = useAuth();
   const location = useLocation();

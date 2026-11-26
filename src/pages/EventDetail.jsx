@@ -1,3 +1,7 @@
+/**
+ * EventDetail: role-aware event workspace for overview, attendees, tasks, and comments.
+ * Routed at /events/:id; reads active-user permissions and event data from the contexts.
+ */
 import { useMemo, useState } from 'react';
 import { Link, useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import AttendeeList from '../components/AttendeeList';
@@ -29,10 +33,8 @@ import {
 } from '../utils/eventHelpers';
 
 /**
- * Event workspace at /events/:id. What you see depends on your role:
- *   Host      - everything, including delete and co-host management
- *   Co-host   - edit event, attendees, tasks, moderate comments
- *   Guest     - details, RSVP, comments (tasks and attendee list are hidden)
+ * Route id selects the event; currentUser determines role/permissions.
+ * Local dialog and task-view state controls edits, confirmations, and the task presentation.
  */
 export default function EventDetail() {
   const { id } = useParams();
@@ -48,6 +50,7 @@ export default function EventDetail() {
   const event = events.find((e) => e.id === id);
   useDocumentTitle(event?.title);
 
+  // Dialog selections, confirmation targets, and task layout stay local; EventContext owns shared records.
   const [editing, setEditing] = useState(false);
   const [confirmDelete, setConfirmDelete] = useState(false);
   const [taskDialog, setTaskDialog] = useState(null); // { task? } when open

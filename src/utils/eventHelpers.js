@@ -178,6 +178,7 @@ export function getCoverStyle(event) {
 
 /* --------------------------------- tasks ---------------------------------- */
 
+/** Compares local calendar dates so a task due today is not overdue until tomorrow. */
 export function isTaskOverdue(task, now = new Date()) {
   return task.status !== 'done' && !!task.dueDate && parseDateKey(task.dueDate) < startOfDay(now);
 }

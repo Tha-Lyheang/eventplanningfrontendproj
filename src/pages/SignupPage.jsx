@@ -1,3 +1,7 @@
+/**
+ * SignupPage: validates account details, creates a user, and returns to a requested route.
+ * Routed at /signup; AuthContext stores the new account and ToastContext confirms success.
+ */
 import { useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
@@ -6,12 +10,17 @@ import useDocumentTitle from '../hooks/useDocumentTitle';
 
 const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
+/**
+ * Local form/error/visibility/progress state keeps credentials transient while editing.
+ * On success signup persists the account, then this page redirects and announces the welcome.
+ */
 export default function SignupPage() {
   useDocumentTitle('Sign up');
   const navigate = useNavigate();
   const location = useLocation();
   const { signup, users } = useAuth();
   const toast = useToast();
+  // Keep account fields and validation UI local; AuthContext persists only the resulting user/hash.
   const [values, setValues] = useState({ name: '', email: '', password: '', confirmPassword: '' });
   const [errors, setErrors] = useState({});
   const [showPassword, setShowPassword] = useState(false);

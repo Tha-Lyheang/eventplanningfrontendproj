@@ -1,3 +1,7 @@
+/**
+ * main: mounts the React tree and composes router, theme, toast, event, and auth providers.
+ * BrowserRouter wraps AuthProvider because auth actions navigate after session changes.
+ */
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 import { BrowserRouter } from 'react-router-dom';
