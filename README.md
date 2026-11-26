@@ -43,6 +43,7 @@ src/
 (all promise-based). Re-implement them with `fetch`/WebSocket – or replace snapshot saving with per-action
 endpoints driven by the reducer actions – and nothing else changes.
 
+
 ## Roles (enforced in the UI; a backend must re-check)
 | | Host | Co-host | Guest |
 |---|---|---|---|
