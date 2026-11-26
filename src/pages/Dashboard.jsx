@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import EmptyState from '../components/EmptyState';
 import EventCard from '../components/EventCard';
@@ -33,6 +33,12 @@ export default function Dashboard() {
   const [query, setQuery] = useState('');
   const [filter, setFilter] = useState('upcoming');
   const [creating, setCreating] = useState(false);
+
+  useEffect(() => {
+    setQuery('');
+    setFilter('upcoming');
+    setCreating(false);
+  }, [currentUser?.id]);
 
   const rows = useMemo(() => {
     const q = query.trim().toLowerCase();

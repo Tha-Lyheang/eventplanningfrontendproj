@@ -66,7 +66,7 @@ export default function EventDetail() {
   if (!event) {
     return (
       <div className="page">
-        <EmptyState icon="🧭" title="Event not found" action={<Link to="/" className="btn btn--primary">Back to dashboard</Link>}>
+        <EmptyState icon="🧭" title="Event not found" action={<Link to="/dashboard" className="btn btn--primary">Back to dashboard</Link>}>
           It may have been deleted, or the link is incorrect.
         </EmptyState>
       </div>
@@ -97,7 +97,7 @@ export default function EventDetail() {
   function handleDelete() {
     deleteEvent(event.id);
     toast.success(`"${event.title}" deleted`);
-    navigate('/');
+    navigate('/dashboard');
   }
 
   function handleDuplicate() {
@@ -126,7 +126,7 @@ export default function EventDetail() {
 
   return (
     <div className="page">
-      <Link to="/" className="back-link">← All events</Link>
+      <Link to="/dashboard" className="back-link">← All events</Link>
 
       <div className="hero" style={getCoverStyle(event)}>
         <div className="hero-overlay">

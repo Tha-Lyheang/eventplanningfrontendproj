@@ -6,7 +6,7 @@ export default function NotFound() {
   useDocumentTitle('Page not found');
   return (
     <div className="page">
-      <EmptyState icon="🧭" title="Page not found" action={<Link to="/" className="btn btn--primary">Back to dashboard</Link>}>
+      <EmptyState icon="🧭" title="Page not found" action={<Link to="/dashboard" className="btn btn--primary">Back to dashboard</Link>}>
         The page you are looking for doesn&apos;t exist.
       </EmptyState>
     </div>

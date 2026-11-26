@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { Route, Routes, useLocation } from 'react-router-dom';
+import { Navigate, Route, Routes, useLocation } from 'react-router-dom';
 import Navbar from './components/Navbar';
 import CalendarPage from './pages/CalendarPage';
 import Dashboard from './pages/Dashboard';
@@ -26,7 +26,8 @@ function RouteAnnouncer() {
 
 /**
  * Routes
- *   /              Dashboard (search, filters, create)
+ *   /              Welcome
+ *   /dashboard     Dashboard (search, filters, create)
  *   /events/:id    Event workspace (role-aware: attendees, tasks, comments, edit)
  *   /event/:id     Public guest page - the shareable URL
  *   /calendar      Month / week / agenda
@@ -40,10 +41,11 @@ export default function App() {
       <RouteAnnouncer />
       <main id="main" tabIndex={-1}>
         <Routes>
-          <Route path="/welcome" element={<PublicOnlyRoute><WelcomePage /></PublicOnlyRoute>} />
+          <Route path="/" element={<WelcomePage />} />
+          <Route path="/welcome" element={<Navigate to="/" replace />} />
           <Route path="/login" element={<PublicOnlyRoute><LoginPage /></PublicOnlyRoute>} />
           <Route path="/signup" element={<PublicOnlyRoute><SignupPage /></PublicOnlyRoute>} />
-          <Route path="/" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
+          <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
           <Route path="/events/new" element={<ProtectedRoute><NewEventPage /></ProtectedRoute>} />
           <Route path="/events/:id" element={<ProtectedRoute><EventDetail /></ProtectedRoute>} />
           <Route path="/event/:id" element={<PublicEvent />} />

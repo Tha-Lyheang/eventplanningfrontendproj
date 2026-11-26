@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { Link, useLocation, useNavigate, useSearchParams } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import useDocumentTitle from '../hooks/useDocumentTitle';
 
@@ -7,7 +7,9 @@ export default function LoginPage() {
   useDocumentTitle('Log in');
   const navigate = useNavigate();
   const location = useLocation();
-  const { login, loginDemo } = useAuth();
+  const [searchParams] = useSearchParams();
+  const adding = searchParams.get('add') === '1';
+  const { login, loginDemo, accounts, switchAccount } = useAuth();
   const [values, setValues] = useState({ email: '', password: '', remember: true });
   const [error, setError] = useState('');
   const [submitting, setSubmitting] = useState(false);
@@ -22,7 +24,7 @@ export default function LoginPage() {
     try {
       await login(values);
       const requested = location.state?.from;
-      navigate(requested ? `${requested.pathname}${requested.search || ''}${requested.hash || ''}` : '/', { replace: true });
+      navigate(requested ? `${requested.pathname}${requested.search || ''}${requested.hash || ''}` : '/dashboard', { replace: true });
     } catch {
       setError('Incorrect email or password');
     } finally {
@@ -34,7 +36,7 @@ export default function LoginPage() {
     setSubmitting(true);
     try {
       await loginDemo(true);
-      navigate('/', { replace: true });
+      navigate('/dashboard', { replace: true });
     } finally {
       setSubmitting(false);
     }
@@ -43,7 +45,27 @@ export default function LoginPage() {
   return (
     <div className="auth-page">
       <section className="auth-card" aria-labelledby="login-title">
-        <h1 id="login-title">Log in to Gather</h1>
+        <h1 id="login-title">{adding ? 'Add another account' : 'Log in to Gather'}</h1>
+        {adding && accounts.length > 0 && (
+          <div className="continue-list">
+            <p className="muted">Continue as</p>
+            {accounts.map((account) => (
+              <button
+                type="button"
+                className="continue-account"
+                key={account.id}
+                onClick={() => {
+                  switchAccount(account.id);
+                  navigate(location.state?.from
+                    ? `${location.state.from.pathname}${location.state.from.search || ''}${location.state.from.hash || ''}`
+                    : '/dashboard', { replace: true });
+                }}
+              >
+                <span><strong>{account.name}</strong><small>{account.email}</small></span>
+              </button>
+            ))}
+          </div>
+        )}
         {error && <p className="auth-error" role="alert">{error}</p>}
         <form onSubmit={handleSubmit}>
           <div className="field">
@@ -63,7 +85,9 @@ export default function LoginPage() {
           </button>
         </form>
         <button className="btn auth-demo" type="button" onClick={handleDemo} disabled={submitting}>Try the demo</button>
-        <p className="auth-link">New here? <Link to="/signup">Create an account</Link></p>
+        {adding
+          ? <p className="auth-link"><Link to={location.state?.from?.pathname || '/dashboard'}>Cancel</Link></p>
+          : <p className="auth-link">New here? <Link to="/signup" state={{ from: location.state?.from }}>Create an account</Link></p>}
       </section>
     </div>
   );

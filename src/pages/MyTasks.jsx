@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import EmptyState from '../components/EmptyState';
 import SegmentedControl from '../components/SegmentedControl';
@@ -17,6 +17,7 @@ export default function MyTasks() {
   const { status, events, tasks, users, updateTask } = useEvents();
   const { currentUser } = useAuth();
   const [scope, setScope] = useState('mine');
+  useEffect(() => setScope('mine'), [currentUser?.id]);
 
   const usersById = useMemo(() => Object.fromEntries(users.map((u) => [u.id, u])), [users]);
   const eventsById = useMemo(() => Object.fromEntries(events.map((e) => [e.id, e])), [events]);
@@ -76,7 +77,7 @@ export default function MyTasks() {
       {status === 'loading' ? (
         <SkeletonGrid count={3} />
       ) : myTasks.length === 0 ? (
-        <EmptyState icon="🎯" title="Nothing assigned to you" action={<Link to="/" className="btn">Browse events</Link>}>
+        <EmptyState icon="🎯" title="Nothing assigned to you" action={<Link to="/dashboard" className="btn">Browse events</Link>}>
           Tasks assigned to you will show up here.
         </EmptyState>
       ) : (

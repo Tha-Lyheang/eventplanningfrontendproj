@@ -1,24 +1,16 @@
-import { useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import AccountSwitcher from '../components/AccountSwitcher';
 import useDocumentTitle from '../hooks/useDocumentTitle';
 
 export default function WelcomePage() {
   useDocumentTitle('Welcome to Gather');
   const navigate = useNavigate();
-  const { loginDemo } = useAuth();
-
-  useEffect(() => {
-    try {
-      localStorage.setItem('hasVisited', 'true');
-    } catch {
-      // Welcome will still render if storage is unavailable.
-    }
-  }, []);
+  const { loginDemo, isAuthenticated, currentUser } = useAuth();
 
   async function handleDemo() {
     await loginDemo(true);
-    navigate('/', { replace: true });
+    navigate('/dashboard', { replace: true });
   }
 
   const features = [
@@ -35,9 +27,18 @@ export default function WelcomePage() {
         <h1>Plan events. Share tasks. Gather people.</h1>
         <p>One place to organize guests, schedules and every detail that makes an event memorable.</p>
         <div className="welcome-actions">
-          <Link className="btn btn--primary" to="/signup">Sign up</Link>
-          <Link className="btn" to="/login">Log in</Link>
-          <button className="btn btn--ghost" type="button" onClick={handleDemo}>Try the demo</button>
+          {isAuthenticated ? (
+            <>
+              <Link className="btn btn--primary" to="/dashboard">Continue as {currentUser.name}</Link>
+              <AccountSwitcher triggerLabel="Switch account" compact />
+            </>
+          ) : (
+            <>
+              <Link className="btn btn--primary" to="/signup">Sign up</Link>
+              <Link className="btn" to="/login">Log in</Link>
+              <button className="btn btn--ghost" type="button" onClick={handleDemo}>Try the demo</button>
+            </>
+          )}
         </div>
       </section>
       <section className="welcome-features" aria-label="Gather features">

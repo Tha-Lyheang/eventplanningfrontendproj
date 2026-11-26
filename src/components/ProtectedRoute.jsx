@@ -14,15 +14,9 @@ export default function ProtectedRoute({ children }) {
     );
   }
   if (!isAuthenticated) {
-    let hasVisited = false;
-    try {
-      hasVisited = localStorage.getItem('hasVisited') === 'true';
-    } catch {
-      hasVisited = false;
-    }
     return (
       <Navigate
-        to={hasVisited ? '/login' : '/welcome'}
+        to="/login"
         replace
         state={{ from: location }}
       />

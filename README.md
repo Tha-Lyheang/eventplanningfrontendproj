@@ -11,8 +11,10 @@ npm run build && npm run preview   # production build
 Requires Node 18+. Deep links like `/event/evt_launch` work in dev/preview (SPA fallback); on static hosting configure a rewrite to `index.html`.
 
 ## Authentication
-- First-time visitors see `/welcome`; returning logged-out visitors go to `/login`.
-- Demo account: `dev@example.com` / `Demo1234`
+- The landing page is `/` for every visitor. The dashboard is `/dashboard`.
+- Protected routes redirect unauthenticated visitors to `/login`.
+- Demo account: `dev@example.com` / `admin`
+- Multiple signed-in accounts are stored per browser; use the account switcher to add or switch accounts.
 - Users and sessions are stored only in browser storage. Demo passwords use a random per-user salt and SHA-256 via the Web Crypto API.
 - This client-side authentication is **not production-grade security** and must be replaced with server-side authentication and a secure password-hashing implementation before use with real accounts.
 

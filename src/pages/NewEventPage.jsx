@@ -22,7 +22,7 @@ export default function NewEventPage() {
     <div className="page page--narrow">
       <h1>Create event</h1>
       <div className="card">
-        <EventForm submitLabel="Create event" onSubmit={handleCreate} onCancel={() => navigate('/')} />
+        <EventForm submitLabel="Create event" onSubmit={handleCreate} onCancel={() => navigate('/dashboard')} />
       </div>
     </div>
   );

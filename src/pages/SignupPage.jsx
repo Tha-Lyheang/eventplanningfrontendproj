@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useToast } from '../context/ToastContext';
 import useDocumentTitle from '../hooks/useDocumentTitle';
@@ -9,6 +9,7 @@ const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 export default function SignupPage() {
   useDocumentTitle('Sign up');
   const navigate = useNavigate();
+  const location = useLocation();
   const { signup, users } = useAuth();
   const toast = useToast();
   const [values, setValues] = useState({ name: '', email: '', password: '', confirmPassword: '' });
@@ -40,7 +41,9 @@ export default function SignupPage() {
     try {
       const user = await signup(values);
       toast.success(`Welcome to Gather, ${user.name.split(/\s+/)[0]}!`);
-      navigate('/', { replace: true });
+      navigate(location.state?.from
+        ? `${location.state.from.pathname}${location.state.from.search || ''}${location.state.from.hash || ''}`
+        : '/dashboard', { replace: true });
     } catch (error) {
       setErrors(error.message === 'EMAIL_EXISTS'
         ? { email: 'This email is already registered.' }
@@ -103,7 +106,7 @@ export default function SignupPage() {
             {submitting ? <><span className="spinner spinner--sm" aria-hidden="true" /> Creating account…</> : 'Sign up'}
           </button>
         </form>
-        <p className="auth-link">Already have an account? <Link to="/login">Log in</Link></p>
+        <p className="auth-link">Already have an account? <Link to="/login" state={{ from: location.state?.from }}>Log in</Link></p>
       </section>
     </div>
   );

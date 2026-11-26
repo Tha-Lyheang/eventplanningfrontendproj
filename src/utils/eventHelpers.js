@@ -147,7 +147,6 @@ export function getWaitlistPosition(stats, rsvpId) {
  * share link can still open the guest page (/event/:id) - the link acts as the invitation.
  */
 export function canSeeEvent(event, user, rsvps) {
-  if (event.visibility !== 'private') return true;
   if (!user) return false;
   if (getRole(event, user.id) !== ROLES.GUEST) return true;
   return !!getUserRsvp(event, user, rsvps);
